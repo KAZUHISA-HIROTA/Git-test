@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パレット構造別推移（2014-2024年）</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Yu Gothic', 'Hiragino Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 16/9;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            overflow: auto;
+        }
+
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .slide-date {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .slide-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chart-container h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+        }
+
+        canvas {
+            max-height: 280px;
+        }
+
+        .slide-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .footer-item h4 {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .footer-item p {
+            font-size: 11px;
+        }
+
+        .footer-item .color-label {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .color-1 {
+            background-color: #FF6B6B;
+        }
+
+        .color-2 {
+            background-color: #FFD43B;
+        }
+
+        .color-3 {
+            background-color: #51CF66;
+        }
+
+        .highlight {
+            background: #fff5e6;
+            padding: 10px;
+            border-left: 4px solid #ff9800;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .slide {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .slide {
+                padding: 30px;
+            }
+            .slide-content {
+                grid-template-columns: 1fr;
+            }
+            .slide-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <!-- ヘッダー -->
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">国内パレット構造別推移分析</h1>
+                <p class="slide-date">2014年～2024年（過去10年）｜3構成：片面（他）/ 田の字 / 両面</p>
+            </div>
+        </div>
+
+        <!-- グラフエリア -->
+        <div class="slide-content">
+            <!-- グラフ1：構造別推移（折れ線グラフ） -->
+            <div class="chart-container">
+                <h3>📊 構造別推移（中央推定値）</h3>
+                <div class="chart-wrapper">
+                    <canvas id="structureChart"></canvas>
+                </div>
+            </div>
+
+            <!-- グラフ2：積み上げ面グラフで全体を表現 -->
+            <div class="chart-container">
+                <h3>📈 構成比の推移（積み上げ）</h3>
+                <div class="chart-wrapper">
+                    <canvas id="stackChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- フッター（要点） -->
+        <div class="slide-footer">
+            <div class="footer-item">
+                <h4><span class="color-label color-1"></span>片面（田の字以外）</h4>
+                <p><strong>2014年：33～40%</strong><br>↓<br><strong>2024年：10～25%</strong><br><br>-約8～25pt低下<br><small>軽量・単純型から標準化へシフト</small></p>
+            </div>
+            <div class="footer-item">
+                <h4><span class="color-label color-2"></span>田の字構造</h4>
+                <p><strong>2014年：10～15%</strong><br>↓<br><strong>2024年：35～50%</strong><br><br>+約25～35pt上昇<br><small>樹脂D型が業界標準化。ハンドリフト対応</small></p>
+            </div>
+            <div class="footer-item">
+                <h4><span class="color-label color-3"></span>両面使用形</h4>
+                <p><strong>2014年：45～55%</strong><br>↓<br><strong>2024年：30～45%</strong><br><br>-約15～25pt低下<br><small>段積み・重量物・青果など特定用途に集約</small></p>
+            </div>
+        </div>
+
+        <div class="highlight">
+            <strong>重要：</strong> 本グラフは、JPA公開統計（材質別生産量・レンタル保有数量）と主要機種の公開仕様から推定。公式に「片面・田の字・両面別」統計は公開されていません。2024年時点の最良推定値を使用。
+        </div>
+    </div>
+
+    <script>
+        // ========== グラフ1：構造別推移（折れ線グラフ） ==========
+        const ctx1 = document.getElementById('structureChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                datasets: [
+                    {
+                        label: '片面（田の字以外）',
+                        data: [36, 35, 34, 33, 31, 28, 25, 22, 19, 15, 17],
+                        borderColor: '#FF6B6B',
+                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#FF6B6B',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2,
+                    },
+                    {
+                        label: '田の字構造',
+                        data: [12, 14, 16, 19, 22, 26, 32, 40, 44, 47, 43],
+                        borderColor: '#FFD43B',
+                        backgroundColor: 'rgba(255, 212, 59, 0.1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#FFD43B',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2,
+                    },
+                    {
+                        label: '両面使用形',
+                        data: [52, 51, 50, 48, 47, 46, 43, 38, 37, 38, 40],
+                        borderColor: '#51CF66',
+                        backgroundColor: 'rgba(81, 207, 102, 0.1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#51CF66',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2,
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: { size: 12, weight: '600' },
+                            padding: 15,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            },
+                            afterLabel: function(context) {
+                                const data = context.dataset.data;
+                                const index = context.dataIndex;
+                                if (index > 0) {
+                                    const change = data[index] - data[index - 1];
+                                    return change > 0 ? '↑ +' + change.toFixed(0) + 'pt' : '↓ ' + change.toFixed(0) + 'pt';
+                                }
+                                return '';
+                            }
+                        },
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        borderColor: 'white',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            },
+                            font: { size: 11 },
+                            color: '#666'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#666'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // ========== グラフ2：積み上げ面グラフ ==========
+        const ctx2 = document.getElementById('stackChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                datasets: [
+                    {
+                        label: '片面（田の字以外）',
+                        data: [36, 35, 34, 33, 31, 28, 25, 22, 19, 15, 17],
+                        backgroundColor: '#FF6B6B',
+                        borderColor: 'white',
+                        borderWidth: 2,
+                    },
+                    {
+                        label: '田の字構造',
+                        data: [12, 14, 16, 19, 22, 26, 32, 40, 44, 47, 43],
+                        backgroundColor: '#FFD43B',
+                        borderColor: 'white',
+                        borderWidth: 2,
+                    },
+                    {
+                        label: '両面使用形',
+                        data: [52, 51, 50, 48, 47, 46, 43, 38, 37, 38, 40],
+                        backgroundColor: '#51CF66',
+                        borderColor: 'white',
+                        borderWidth: 2,
+                    }
+                ]
+            },
+            options: {
+                indexAxis: undefined,
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: { size: 12, weight: '600' },
+                            padding: 15,
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                        },
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        borderColor: 'white',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#666'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            },
+                            font: { size: 11 },
+                            color: '#666'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
